@@ -1,40 +1,118 @@
 <!DOCTYPE html>  
 <html lang="en">  
 <head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Post Fetcher</title>  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">  
+    <style>  
+        body {  
+            font-family: Arial, sans-serif;  
+            background-color: #f4f4f9;  
+            margin: 0;  
+            padding: 20px;  
+        }  
+        h1 {  
+            text-align: center;  
+            color: #333;  
+        }  
+        form {  
+            background: #fff;  
+            padding: 20px;  
+            border-radius: 5px;  
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  
+            margin-bottom: 20px;  
+        }  
+        label {  
+            display: block;  
+            margin-bottom: 5px;  
+            font-weight: bold;  
+        }  
+        input[type="text"],  
+        input[type="number"] {  
+            width: calc(100% - 10px);  
+            padding: 8px;  
+            border: 1px solid #ccc;  
+            border-radius: 4px;  
+            margin-bottom: 10px;  
+        }  
+        button {  
+            background-color: #28a745;  
+            color: white;  
+            border: none;  
+            padding: 10px 15px;  
+            margin: 5px 0;  
+            border-radius: 4px;  
+            cursor: pointer;  
+            font-size: 16px;  
+            transition: background-color 0.3s, transform 0.2s;  
+        }  
+        button:hover {  
+            background-color: #218838;  
+            transform: scale(1.05);  
+        }  
+        button:disabled {  
+            background-color: #ccc;  
+            cursor: not-allowed;  
+        }  
+        pre {  
+            background: #fff;  
+            padding: 15px;  
+            border-radius: 5px;  
+            overflow: auto;  
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  
+        }  
+        .pagination-buttons {  
+            display: flex;  
+            justify-content: center;  
+            margin: 10px 0;  
+        }  
+        .pagination-buttons button {  
+            margin: 0 5px;  
+        }  
+        .image-button {  
+            margin: 5px 0;  
+            display: inline-block;  
+        }  
+    </style>
  <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
         t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "o4k68jfqvq");
-</script>
-    <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>Post Fetcher</title>  
+</script>  
 </head>  
 <body>  
     <h1>Post Fetcher</h1>  
     <form id="fetchForm">  
         <label for="userId">User ID:</label>  
         <input type="text" id="userId" required>  
-        <br>  
+        
         <label for="forumId">Forum ID:</label>  
         <input type="text" id="forumId" required>  
-        <br>  
+        
         <label for="pageSize">每页帖子数量:</label>  
         <input type="number" id="pageSize" value="30" min="1" required>  
-        <br>  
+        
         <button type="submit">Fetch Posts</button>  
     </form>  
     <pre id="output"></pre>  
-    <button id="prevPage" style="display:none;">上一页</button>  
-    <button id="nextPage" style="display:none;">下一页</button>  
+    <div class="pagination-buttons">  
+        <button id="prevPage" style="display:none;">上一页</button>  
+        <button id="nextPage" style="display:none;">下一页</button>  
+    </div>  
+    <div class="pagination-buttons">  
+        <button id="downloadAll" style="display:none;">下载所有帖子为ZIP</button>  
+        <button id="downloadCurrent" style="display:none;">下载当前页帖子为ZIP</button>  
+    </div>  
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>  
     <script>  
         let postsData = [];  
         let currentPage = 0;  
         const postsPerPage = 30;  
-        
+
         document.getElementById('fetchForm').addEventListener('submit', async function(event) {  
             event.preventDefault();  
 
@@ -67,7 +145,7 @@
             const start = currentPage * postsPerPage;  
             const end = start + postsPerPage;  
             const currentPosts = postsData.slice(start, end);  
-            
+
             output.innerHTML += `<strong>成功爬取 ${postsData.length} 个帖子</strong><br><br>`;  
             currentPosts.forEach((post, index) => {  
                 output.innerHTML += `<strong>${post.title}</strong> (ID: ${post.postId})<br>`;  
@@ -76,20 +154,22 @@
 
                 // 下载帖子内容的按钮  
                 output.innerHTML += `<button onclick="downloadPost(${start + index})">下载此帖子</button>`;  
-
+                
                 // 下载图片的按钮（假设图片在 post.images 数组中）  
                 if (post.images && post.images.length > 0) {  
                     post.images.forEach((image, imgIndex) => {  
                         const fullImageUrl = image.startsWith('http') ? image : `https://i.chao-fan.com/${image}`;  
-                        output.innerHTML += `<a href="${fullImageUrl}" target="_blank"><button>查看图片 ${imgIndex + 1}</button></a>`;  
+                        output.innerHTML += `<a href="${fullImageUrl}" target="_blank" class="image-button"><button>查看图片 ${imgIndex + 1}</button></a>`;  
                     });  
                 }  
                 output.innerHTML += '<br><br>';  
             });  
 
-            // 更新“上一页”和“下一页”按钮的可见性  
+            // 更新按钮可见性  
             document.getElementById('prevPage').style.display = currentPage > 0 ? 'inline' : 'none';  
             document.getElementById('nextPage').style.display = end < postsData.length ? 'inline' : 'none';  
+            document.getElementById('downloadAll').style.display = postsData.length > 0 ? 'inline' : 'none';  
+            document.getElementById('downloadCurrent').style.display = currentPosts.length > 0 ? 'inline' : 'none';  
         }  
 
         document.getElementById('prevPage').addEventListener('click', function() {  
@@ -104,6 +184,51 @@
                 currentPage++;  
                 displayPosts();  
             }  
+        });  
+
+        async function createZip(posts, zipName) {  
+            const zip = new JSZip();  
+
+            // 使用 Promise.all 来并发下载图片  
+            const imagePromises = posts.map(async (post) => {  
+                const postContent = JSON.stringify(post, null, 4);  
+                zip.file(`post_${post.postId}.json`, postContent);  
+                
+                // 下载并添加每张图片到ZIP  
+                if (post.images) {  
+                    await Promise.all(post.images.map(async (image, imgIndex) => {  
+                        const fullImageUrl = image.startsWith('http') ? image : `https://i.chao-fan.com/${image}`;  
+
+                        // 获取图片数据  
+                        const imgResponse = await fetch(fullImageUrl);  
+                        if (imgResponse.ok) {  
+                            const imgBlob = await imgResponse.blob();  
+                            zip.file(`post_${post.postId}_image_${imgIndex + 1}.jpg`, imgBlob);  
+                        }  
+                    }));  
+                }  
+            });  
+
+            await Promise.all(imagePromises);  
+            const content = await zip.generateAsync({ type: "blob" });  
+            const url = URL.createObjectURL(content);  
+            const a = document.createElement('a');  
+            a.href = url;  
+            a.download = zipName;  
+            document.body.appendChild(a);  
+            a.click();  
+            document.body.removeChild(a);  
+            URL.revokeObjectURL(url);  
+        }  
+
+        document.getElementById('downloadAll').addEventListener('click', function() {  
+            createZip(postsData, 'all_posts.zip');  
+        });  
+
+        document.getElementById('downloadCurrent').addEventListener('click', function() {  
+            const start = currentPage * postsPerPage;  
+            const currentPosts = postsData.slice(start, start + postsPerPage);  
+            createZip(currentPosts, `current_posts_page_${currentPage + 1}.zip`);  
         });  
 
         function downloadPost(index) {  
