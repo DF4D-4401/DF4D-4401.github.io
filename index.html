@@ -111,14 +111,19 @@
 </head>  
 <body>  
     <h1>Post Fetcher</h1>  
+   <title>帖子爬取</title>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>  
+</head>  
+<body>  
     <form id="fetchForm">  
-        <label for="userId">User ID:</label>  
+        用户ID:  
         <input type="text" id="userId" required>  
         <br>  
-        <label for="forumId">Forum ID:</label>  
+        论坛ID:  
         <input type="text" id="forumId" required>  
         <br>  
-        <label for="pageSize">输入帖子数量:</label>  
+        子数量:  
         <input type="number" id="pageSize" value="10" min="1" required>  
         <br>  
         <button type="submit">Fetch Posts</button>  
@@ -244,69 +249,55 @@
         }  
 
         async function downloadImage(imageUrl) {  
-            const a = document.createElement('a');  
-            a.href = imageUrl;  
-            a.download = imageUrl.split('/').pop();  
-            document.body.appendChild(a);  
-            a.click();  
-            document.body.removeChild(a);  
+            window.open(imageUrl, '_blank'); // 在新页面中打开图片  
         }  
 
-      async function downloadAll() {  
-    const zip = new JSZip();  
+        async function downloadAll() {  
+            const zip = new JSZip();  
 
-    for (let i = 0; i < postsData.length; i++) {  
-        const post = postsData[i];  
-        const postFolder = zip.folder(`post_${post.postId}`); // 以帖子 ID 创建文件夹  
-        const commentsFolder = postFolder.folder('comments'); // 为评论创建子文件夹  
+            for (let i = 0; i < postsData.length; i++) {  
+                const post = postsData[i];  
+                const postFolder = zip.folder(`post_${post.postId}`); // 以帖子 ID 创建文件夹  
+                const commentsFolder = postFolder.folder('comments'); // 为评论创建子文件夹  
 
-        // 添加帖子正文  
-        const postContent = JSON.stringify(post, null, 4);  
-        postFolder.file(`post_${post.postId}.json`, postContent);  
+                // 添加帖子正文  
+                const postContent = JSON.stringify(post, null, 4);  
+                postFolder.file(`post_${post.postId}.json`, postContent);  
 
-        // 添加帖子中的图片  
-        const images = post.images || [];  
-        
-        // 添加imageName图片  
-        const imageName = post.imageName ? [post.imageName] : [];   // 确保imageName是一个数组  
-        const allImages = [...new Set([...images, ...imageName])]; // 确保不重复  
+                // 添加帖子中的图片  
+                const images = post.images || [];  
+                for (const image of images) {  
+                    const imageUrl = 'https://i.chao-fan.com/' + image;  
+                    const imgBlob = await fetch(imageUrl).then(res => res.blob());  
+                    postFolder.file(image, imgBlob);  
+                }  
 
-        for (const image of allImages) {  
-            const imageUrl = 'https://i.chao-fan.com/' + image;  
-            const imgBlob = await fetch(imageUrl).then(res => res.blob());  
-            postFolder.file(image, imgBlob);  
-        }  
+                // 获取评论并添加到子文件夹  
+                const commentsResponse = await fetch(`https://choa.fun/api/v0/list_comments?postId=${post.postId}`);  
+                const commentsData = await commentsResponse.json();  
 
-        // 获取评论并添加到子文件夹  
-        const commentsResponse = await fetch(`https://choa.fun/api/v0/list_comments?postId=${post.postId}`);  
-        const commentsData = await commentsResponse.json();  
+                if (commentsData.success) {  
+                    const commentsJson = JSON.stringify(commentsData.data, null, 4);  
+                    commentsFolder.file(`post_${post.postId}_comments.json`, commentsJson);  
 
-        if (commentsData.success) {  
-            const commentsJson = JSON.stringify(commentsData.data, null, 4);  
-            commentsFolder.file(`post_${post.postId}_comments.json`, commentsJson);  
-
-            // 添加评论中的图片到子文件夹  
-            for (const comment of commentsData.data) {  
-                if (comment.imageNames) {  
-                    const imgList = comment.imageNames.split(',');  
-                    for (const img of imgList) {  
-                        const commentImageUrl = 'https://i.chao-fan.com/' + img;  
-                        const commentImgBlob = await fetch(commentImageUrl).then(res => res.blob());  
-                        commentsFolder.file(img, commentImgBlob);  
+                    // 添加评论中的图片到子文件夹  
+                    for (const comment of commentsData.data) {  
+                        if (comment.imageNames) {  
+                            const imgList = comment.imageNames.split(',');  
+                            for (const img of imgList) {  
+                                const commentImageUrl = 'https://i.chao-fan.com/' + img;  
+                                const commentImgBlob = await fetch(commentImageUrl).then(res => res.blob());  
+                                commentsFolder.file(img, commentImgBlob);  
+                            }  
+                        }  
                     }  
                 }  
             }  
+
+            zip.generateAsync({ type: "blob" }).then(function (content) {  
+                saveAs(content, "posts_and_comments.zip");  
+            });  
         }  
-    }  
-
-    zip.generateAsync({ type: "blob" }).then(function (content) {  
-        saveAs(content, "posts_and_comments.zip");  
-    });  
-}
     </script>  
 </body>  
-</html>
-    </script>  
-</body>  
-
 </html>
