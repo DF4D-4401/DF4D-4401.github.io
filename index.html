@@ -111,7 +111,10 @@
 </head>  
 <body>  
     <h1>Post Fetcher</h1>  
-   <title>帖子爬取</title>  
+  <!DOCTYPE html>  
+<html>  
+<head>  
+    <title>帖子爬取</title>  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>  
 </head>  
@@ -123,7 +126,7 @@
         论坛ID:  
         <input type="text" id="forumId" required>  
         <br>  
-        子数量:  
+        帖子数量:  
         <input type="number" id="pageSize" value="10" min="1" required>  
         <br>  
         <button type="submit">Fetch Posts</button>  
@@ -264,15 +267,21 @@
                 const postContent = JSON.stringify(post, null, 4);  
                 postFolder.file(`post_${post.postId}.json`, postContent);  
 
-                // 添加帖子中的图片  
-                const images = post.images || [];  
-                for (const image of images) {  
-                    const imageUrl = 'https://i.chao-fan.com/' + image;  
-                    const imgBlob = await fetch(imageUrl).then(res => res.blob());  
-                    postFolder.file(image, imgBlob);  
+                // 添加帖子中的图片和视频  
+                const mediaFiles = post.images || [];  
+                for (const media of mediaFiles) {  
+                    const mediaUrl = 'https://i.chao-fan.com/' + media;  
+                    const fileExtension = media.split('.').pop().toLowerCase();  
+                    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(fileExtension)) {  
+                        const imgBlob = await fetch(mediaUrl).then(res => res.blob());  
+                        postFolder.file(media, imgBlob);  
+                    } else if (['mp4', 'mkv', 'webm', 'avi', 'mov'].includes(fileExtension)) {  
+                        const videoBlob = await fetch(mediaUrl).then(res => res.blob());  
+                        postFolder.file(media, videoBlob);  
+                    }  
                 }  
 
-                // 获取评论并添加到子文件夹  
+                // 获取和保存评论  
                 const commentsResponse = await fetch(`https://choa.fun/api/v0/list_comments?postId=${post.postId}`);  
                 const commentsData = await commentsResponse.json();  
 
@@ -280,14 +289,20 @@
                     const commentsJson = JSON.stringify(commentsData.data, null, 4);  
                     commentsFolder.file(`post_${post.postId}_comments.json`, commentsJson);  
 
-                    // 添加评论中的图片到子文件夹  
+                    // 添加评论中的图片和视频  
                     for (const comment of commentsData.data) {  
                         if (comment.imageNames) {  
                             const imgList = comment.imageNames.split(',');  
                             for (const img of imgList) {  
                                 const commentImageUrl = 'https://i.chao-fan.com/' + img;  
-                                const commentImgBlob = await fetch(commentImageUrl).then(res => res.blob());  
-                                commentsFolder.file(img, commentImgBlob);  
+                                const imgExtension = img.split('.').pop().toLowerCase();  
+                                if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(imgExtension)) {  
+                                    const commentImgBlob = await fetch(commentImageUrl).then(res => res.blob());  
+                                    commentsFolder.file(img, commentImgBlob);  
+                                } else if (['mp4', 'mkv', 'webm', 'avi', 'mov'].includes(imgExtension)) {  
+                                    const commentVideoBlob = await fetch(commentImageUrl).then(res => res.blob());  
+                                    commentsFolder.file(img, commentVideoBlob);  
+                                }  
                             }  
                         }  
                     }  
