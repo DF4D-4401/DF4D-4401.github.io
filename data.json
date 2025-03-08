@@ -1,22 +1,22 @@
 [  
     {  
         "title": "第一个标题",  
-        "content": "这是第一个 box 的内容。它可以是任意文本，有效的 HTML 也可以包括链接。",  
+        "content": "# 这是第一个 box 的内容\n这是第一个 box 的内容，可以包含 **粗体文本**、*斜体文本* 和 [链接](https://example.com/first)。",  
         "link": "https://example.com/first"  
     },  
     {  
         "title": "第二个标题",  
-        "content": "这是第二个 box 的内容。这里也可以加入超链接。",  
+        "content": "## 这是第二个 box\n这是第二个 box 的内容，支持 Markdown 的各种写法，如代码块：\n```\nconsole.log('Hello World!');\n```",  
         "link": "https://example.com/second"  
     },  
     {  
         "title": "第三个标题",  
-        "content": "这是第三个 box 的内容，可以包含更多信息。",  
+        "content": "### 列表示例\n- 项目 1\n- 项目 2\n- 项目 3",  
         "link": "https://example.com/third"  
     },  
     {  
         "title": "第四个标题",  
-        "content": "这是第四个 box 的内容，还可以有相关链接。",  
+        "content": "这是第四个 box 的内容，可以使用 Markdown 语法来增强内容。",  
         "link": "https://example.com/fourth"  
     }  
 ]  
