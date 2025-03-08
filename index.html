@@ -141,54 +141,66 @@
     </div>  
 
     <script>  
-        // 加载 JSON 数据  
-        function loadData() {  
-            fetch('data.json')  
-                .then(response => response.json())  
-                .then(data => {  
-                    const container = document.getElementById('container');  
-                    data.forEach(item => {  
-                        const box = document.createElement('div');  
-                        box.className = 'box';  
-                        box.onclick = () => openModal(item.content, item.link); // 传递内容和链接  
-                        box.innerHTML = `<h3>${item.title}</h3><p>点击以展开</p>`;  
-                        container.appendChild(box);  
+        // 确保在DOM加载完成后执行  
+        document.addEventListener('DOMContentLoaded', function() {  
+            // 测试 marked 是否可用  
+            if (typeof marked !== 'function') {  
+                alert('错误：marked.js 未正确加载!');  
+                return;  
+            }  
+
+            // 加载 JSON 数据  
+            function loadData() {  
+                fetch('data.json')  
+                    .then(response => response.json())  
+                    .then(data => {  
+                        const container = document.getElementById('container');  
+                        data.forEach(item => {  
+                            const box = document.createElement('div');  
+                            box.className = 'box';  
+                            box.onclick = () => openModal(item.content, item.link); // 传递内容和链接  
+                            box.innerHTML = `<h3>${item.title}</h3><p>点击以展开</p>`;  
+                            container.appendChild(box);  
+                        });  
+                    })  
+                    .catch(error => {  
+                        console.error('Error loading JSON:', error);  
+                        alert('加载数据失败，请检查控制台。');  
                     });  
-                })  
-                .catch(error => {  
-                    console.error('Error loading JSON:', error);  
-                    alert('加载数据失败，请检查控制台。');  
-                });  
-        }  
-
-        function openModal(content, link) {  
-            try {  
-                // 使用 marked 解析 Markdown 内容并在弹出窗口中插入  
-                const htmlContent = marked(content);  
-                document.getElementById("modalText").innerHTML = `  
-                    ${htmlContent}<br>  
-                    <a href="${link}" target="_blank">点击这里访问链接</a>  
-                `;  
-                document.getElementById("myModal").style.display = "block";  
-            } catch (error) {  
-                console.error('Error processing Markdown:', error);  
-                alert('处理Markdown内容失败，请检查控制台。');  
             }  
-        }  
 
-        function closeModal() {  
-            document.getElementById("myModal").style.display = "none";  
-        }  
-
-        window.onclick = function (event) {  
-            const modal = document.getElementById("myModal");  
-            if (event.target === modal) {  
-                closeModal();  
+            // 打开模态窗口并显示内容  
+            function openModal(content, link) {  
+                try {  
+                    // 使用 marked.parse 代替直接调用 marked  
+                    const htmlContent = marked.parse(content);  
+                    document.getElementById("modalText").innerHTML = `  
+                        ${htmlContent}<br>  
+                        <a href="${link}" target="_blank" rel="noopener noreferrer">点击这里访问链接</a>  
+                    `;  
+                    document.getElementById("myModal").style.display = "flex"; // 使用 flex 显示模态窗口  
+                } catch (error) {  
+                    console.error('Error processing Markdown:', error);  
+                    alert('处理Markdown内容失败，请检查控制台。');  
+                }  
             }  
-        }  
 
-        // 页面加载后调用加载数据的函数  
-        document.addEventListener('DOMContentLoaded', loadData);  
+            // 关闭模态窗口  
+            function closeModal() {  
+                document.getElementById("myModal").style.display = "none";  
+            }  
+
+            // 点击模态窗口外部区域关闭  
+            window.onclick = function(event) {  
+                const modal = document.getElementById("myModal");  
+                if (event.target === modal) {  
+                    closeModal();  
+                }  
+            };  
+
+            // 初始加载数据  
+            loadData();  
+        });  
     </script>  
 </body>  
 
