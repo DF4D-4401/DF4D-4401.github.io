@@ -162,22 +162,28 @@
         }  
 
         function openModal(content, link) {  
-            // 使用 marked 解析 Markdown 内容并在弹出窗口中插入  
-            const htmlContent = marked(content);  
-            document.getElementById("modalText").innerHTML = `  
-                ${htmlContent}<br>  
-                <a href="${link}" target="_blank">点击这里访问链接</a>  
-            `;  
-            document.getElementById("myModal").style.display = "block";  
+            try {  
+                // 使用 marked 解析 Markdown 内容并在弹出窗口中插入  
+                const htmlContent = marked(content);  
+                document.getElementById("modalText").innerHTML = `  
+                    ${htmlContent}<br>  
+                    <a href="${link}" target="_blank">点击这里访问链接</a>  
+                `;  
+                document.getElementById("myModal").style.display = "block";  
+            } catch (error) {  
+                console.error('Error processing Markdown:', error);  
+                alert('处理Markdown内容失败，请检查控制台。');  
+            }  
         }  
 
+        // 关闭模态窗口的函数  
         function closeModal() {  
             document.getElementById("myModal").style.display = "none";  
         }  
 
         window.onclick = function (event) {  
             const modal = document.getElementById("myModal");  
-            if (event.target == modal) {  
+            if (event.target === modal) {  
                 closeModal();  
             }  
         }  
