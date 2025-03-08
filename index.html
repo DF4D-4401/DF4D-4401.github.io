@@ -1,318 +1,133 @@
 <!DOCTYPE html>  
-<html lang="en">  
-
-<head> 
-    <script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "oc47rrtx4x");
-</script>
-     <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>炒饭个人数据保留器</title>  
- <style>  
-        body {  
-            font-family: Arial, sans-serif;  
-            background-color: #f4f4f4;  
-            margin: 0;  
-            padding: 20px;  
-        }  
-
-        h1 {  
-            text-align: center;  
-            color: #333;  
-        }  
-
-        form {  
-            background: #fff;  
-            padding: 20px;  
-            border-radius: 5px;  
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  
-            margin-bottom: 20px;  
-        }  
-
-        label {  
-            display: block;  
-            margin: 10px 0 5px;  
-        }  
-
-        input[type="text"],  
-        input[type="number"] {  
-            width: calc(100% - 20px);  
-            padding: 10px;  
-            border: 1px solid #ccc;  
-            border-radius: 4px;  
-            margin-bottom: 10px;  
-        }  
-
-        button {  
-            background: #007bff;  
-            color: #fff;  
-            border: none;  
-            padding: 10px;  
-            border-radius: 4px;  
-            cursor: pointer;  
-            font-size: 16px;  
-            width: 100%;  
-            transition: background 0.3s;  
-        }  
-
-        button:hover {  
-            background: #0056b3;  
-        }  
-
-        pre {  
-            background: #fff;  
-            padding: 15px;  
-            border-radius: 5px;  
-            overflow: auto;  
-            white-space: pre-wrap;  
-            margin: 20px 0;  
-        }  
-
-        .pagination {  
-            text-align: center;  
-            margin-top: 10px;  
-        }  
-
-        .pagination button {  
-            margin: 0 5px;  
-        }  
-
-        .post {  
-            background: #fff;  
-            border: 1px solid #ddd;  
-            border-radius: 5px;  
-            padding: 15px;  
-            margin: 10px 0;  
-        }  
-
-        .post h3 {  
-            margin: 0 0 10px;  
-            color: #007bff;  
-        }  
-
-        .post button {  
-            margin-top: 5px;  
-            width: auto;  
-        }  
-
-        @media (min-width: 600px) {  
-            body {  
-                max-width: 800px;  
-                margin: 0 auto;  
-            }  
-        }  
-    </style>  
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>  
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>  
-</head>  
-<body>  
-    <h1>Post Fetcher</h1>  
-  <!DOCTYPE html>  
-<html>  
-<head>  
-    <title>帖子爬取</title>  
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>  
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>  
-</head>  
-<body>  
-    <form id="fetchForm">  
-        用户ID:  
-        <input type="text" id="userId" required>  
-        <br>  
-        论坛ID:  
-        <input type="text" id="forumId" required>  
-        <br>  
-        帖子数量:  
-        <input type="number" id="pageSize" value="10" min="1" required>  
-        <br>  
-        <button type="submit">Fetch Posts</button>  
-    </form>  
-    <pre id="output"></pre>  
-    <div id="pagination"></div>  
-
-    <script>  
-        let postsData = [];  
-        let currentPage = 1;  
-        const postsPerPage = 30;  
-
-        document.getElementById('fetchForm').addEventListener('submit', async function (event) {  
-            event.preventDefault();  
-
-            const userId = document.getElementById('userId').value;  
-            const forumId = document.getElementById('forumId').value;  
-            const pageSize = document.getElementById('pageSize').value;  
-            const output = document.getElementById('output');  
-            output.textContent = 'Loading...';  
-
-            try {  
-                const response = await fetch(`https://choa.fun/api/v0/user/list_posts?marker=&pageSize=${pageSize}&forumId=${forumId}&userId=${userId}`);  
-                const data = await response.json();  
-
-                if (data.success) {  
-                    postsData = data.data.posts;  
-                    output.innerHTML = `<strong>成功爬取 ${postsData.length} 个帖子</strong><br><br>`;  
-                    renderPosts();  
-                    renderPagination();  
-                } else {  
-                    output.textContent = '请求失败，请检查后重试！';  
-                }  
-            } catch (error) {  
-                console.error(error);  
-                output.textContent = '发生错误，请重试！';  
-            }  
-        });  
-
-        function renderPosts() {  
-            const output = document.getElementById('output');  
-            output.innerHTML = '';  
-            const start = (currentPage - 1) * postsPerPage;  
-            const end = Math.min(start + postsPerPage, postsData.length);  
-            for (let i = start; i < end; i++) {  
-                const post = postsData[i];  
-                output.innerHTML += `<strong>${post.title}</strong> (ID: ${post.postId})<br>`;  
-                output.innerHTML += `内容: ${post.content || '无内容'}<br>`;  
-                output.innerHTML += `评论数: ${post.comments || 0}<br>`;  
-                output.innerHTML += `<button onclick="downloadPost(${i})">下载此帖子</button><br>`;  
-
-                // 仅当有评论时才显示下载评论按钮  
-                if (post.comments > 0) {  
-                    output.innerHTML += `<button onclick="downloadComments(${post.postId}, '${post.title}')">下载评论</button><br>`;  
-                }  
-
-                const images = post.images || [];  
-                const imageName = post.imageName ? [post.imageName] : [];  
-                const allImages = [...new Set([...images, ...imageName])];  // 确保不重复  
-                allImages.forEach((image) => {  
-                    output.innerHTML += `<button onclick="downloadImage('${'https://i.chao-fan.com/' + image}')">下载图片</button>`;  
-                });  
-
-                output.innerHTML += '<br><br>';  
-            }  
-            output.innerHTML += `<button onclick="downloadAll()">下载整页为ZIP</button>`;  
-            output.innerHTML += `<button onclick="prevPage()">上一页</button>`;  
-            output.innerHTML += `<button onclick="nextPage()">下一页</button>`;  
-        }  
-
-        function renderPagination() {  
-            const pagination = document.getElementById('pagination');  
-            pagination.innerHTML = `当前页面: ${currentPage} / ${Math.ceil(postsData.length / postsPerPage)}`;  
-        }  
-
-        function prevPage() {  
-            if (currentPage > 1) {  
-                currentPage--;  
-                renderPosts();  
-                renderPagination();  
-            }  
-        }  
-
-        function nextPage() {  
-            if (currentPage * postsPerPage < postsData.length) {  
-                currentPage++;  
-                renderPosts();  
-                renderPagination();  
-            }  
-        }  
-
-        async function downloadPost(index) {  
-            const post = postsData[index];  
-            const blob = new Blob([JSON.stringify(post, null, 4)], { type: 'application/json' });  
-            const url = URL.createObjectURL(blob);  
-            const a = document.createElement('a');  
-            a.href = url;  
-            a.download = `post_${post.postId}.json`;  
-            document.body.appendChild(a);  
-            a.click();  
-            document.body.removeChild(a);  
-            URL.revokeObjectURL(url);  
-        }  
-
-        async function downloadComments(postId, postTitle) {  
-            const response = await fetch(`https://choa.fun/api/v0/list_comments?postId=${postId}`);  
-            const data = await response.json();  
-
-            if (data.success) {  
-                const com = JSON.stringify(data.data, null, 4);  
-                const blob = new Blob([com], { type: 'application/json' });  
-                const url = URL.createObjectURL(blob);  
-                const a = document.createElement('a');  
-                a.href = url;  
-                a.download = `post_${postId}_comments.json`;  
-                document.body.appendChild(a);  
-                a.click();  
-                document.body.removeChild(a);  
-                URL.revokeObjectURL(url);  
-            } else {  
-                alert('评论下载失败');  
-            }  
-        }  
-
-        async function downloadImage(imageUrl) {  
-            window.open(imageUrl, '_blank'); // 在新页面中打开图片  
-        }  
-
-        async function downloadAll() {  
-            const zip = new JSZip();  
-
-            for (let i = 0; i < postsData.length; i++) {  
-                const post = postsData[i];  
-                const postFolder = zip.folder(`post_${post.postId}`); // 以帖子 ID 创建文件夹  
-                const commentsFolder = postFolder.folder('comments'); // 为评论创建子文件夹  
-
-                // 添加帖子正文  
-                const postContent = JSON.stringify(post, null, 4);  
-                postFolder.file(`post_${post.postId}.json`, postContent);  
-
-                // 添加帖子中的图片和视频  
-                const mediaFiles = post.images || [];  
-                for (const media of mediaFiles) {  
-                    const mediaUrl = 'https://i.chao-fan.com/' + media;  
-                    const fileExtension = media.split('.').pop().toLowerCase();  
-                    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(fileExtension)) {  
-                        const imgBlob = await fetch(mediaUrl).then(res => res.blob());  
-                        postFolder.file(media, imgBlob);  
-                    } else if (['mp4', 'mkv', 'webm', 'avi', 'mov'].includes(fileExtension)) {  
-                        const videoBlob = await fetch(mediaUrl).then(res => res.blob());  
-                        postFolder.file(media, videoBlob);  
-                    }  
-                }  
-
-                // 获取和保存评论  
-                const commentsResponse = await fetch(`https://choa.fun/api/v0/list_comments?postId=${post.postId}`);  
-                const commentsData = await commentsResponse.json();  
-
-                if (commentsData.success) {  
-                    const commentsJson = JSON.stringify(commentsData.data, null, 4);  
-                    commentsFolder.file(`post_${post.postId}_comments.json`, commentsJson);  
-
-                    // 添加评论中的图片和视频  
-                    for (const comment of commentsData.data) {  
-                        if (comment.imageNames) {  
-                            const imgList = comment.imageNames.split(',');  
-                            for (const img of imgList) {  
-                                const commentImageUrl = 'https://i.chao-fan.com/' + img;  
-                                const imgExtension = img.split('.').pop().toLowerCase();  
-                                if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(imgExtension)) {  
-                                    const commentImgBlob = await fetch(commentImageUrl).then(res => res.blob());  
-                                    commentsFolder.file(img, commentImgBlob);  
-                                } else if (['mp4', 'mkv', 'webm', 'avi', 'mov'].includes(imgExtension)) {  
-                                    const commentVideoBlob = await fetch(commentImageUrl).then(res => res.blob());  
-                                    commentsFolder.file(img, commentVideoBlob);  
-                                }  
-                            }  
-                        }  
-                    }  
-                }  
-            }  
-
-            zip.generateAsync({ type: "blob" }).then(function (content) {  
-                saveAs(content, "posts_and_comments.zip");  
-            });  
-        }  
-    </script>  
-</body>  
-</html>
+ <html lang="en">  
+ <head>  
+   <script type="text/javascript">
+     (function(c,l,a,r,i,t,y){
+         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+         t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+     })(window, document, "clarity", "script", "nzxoamf653");
+ </script>
+   <meta charset="UTF-8">  
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+   <title>ChoaFun Wishes</title>  
+   <style>  
+     body {  
+       font-family: 'Arial', sans-serif;  
+       background: linear-gradient(135deg, #e0f7fa, #ffebee);  
+       margin: 0;  
+       padding: 20px;  
+     }  
+ 
+     .container {  
+       display: flex;  
+       flex-wrap: wrap;  
+       gap: 20px;  
+       justify-content: space-between;  
+       background-color: rgba(255, 255, 255, 0.8);  
+       padding: 20px;  
+       border-radius: 15px;  
+       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);  
+     }  
+ 
+     .box {  
+       flex: 1 1 calc(25% - 20px);  
+       background-color: #ffffff;  
+       border-radius: 10px;  
+       padding: 20px;  
+       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  
+       text-align: center;  
+       text-decoration: none;  
+       color: #333;  
+       transition: transform 0.4s ease, box-shadow 0.4s ease;  
+       cursor: pointer;  
+     }  
+ 
+     .box:hover {  
+       transform: translateY(-8px);  
+       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);  
+     }  
+ 
+     .modal {  
+       display: none;  
+       position: fixed;  
+       z-index: 1000;  
+       left: 0;  
+       top: 0;  
+       width: 100%;  
+       height: 100%;  
+       overflow: auto;  
+       background-color: rgba(0, 0, 0, 0.7);  
+       padding-top: 60px;  
+     }  
+ 
+     .modal-content {  
+       background-color: #fefefe;  
+       margin: 5% auto;  
+       padding: 20px;  
+       border: 1px solid #888;  
+       width: 80%;  
+       border-radius: 10px;  
+       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);  
+       transition: transform 0.3s ease;  
+     }  
+ 
+     .close {  
+       color: #aaa;  
+       float: right;  
+       font-size: 28px;  
+       font-weight: bold;  
+     }  
+ 
+     .close:hover,  
+     .close:focus {  
+       color: black;  
+       text-decoration: none;  
+       cursor: pointer;  
+     }  
+   </style>  
+ </head>  
+ <body>  
+   <div class="container" id="container"></div>  
+ 
+   <div id="myModal" class="modal">  
+     <div class="modal-content">  
+       <span class="close" onclick="closeModal()">&times;</span>  
+       <p id="modalText"></p>  
+     </div>  
+   </div>  
+ 
+   <script>  
+     // 加载 JSON 数据  
+     fetch('data.json')  
+       .then(response => response.json())  
+       .then(data => {  
+         const container = document.getElementById('container');  
+         data.forEach(item => {  
+           const box = document.createElement('div');  
+           box.className = 'box';  
+           box.onclick = () => openModal(item.content);  
+           box.innerHTML = `<h3>${item.title}</h3><p>Click to expand</p>`;  
+           container.appendChild(box);  
+         });  
+       })  
+       .catch(error => console.error('Error loading JSON:', error));  
+ 
+     function openModal(content) {  
+       document.getElementById("modalText").innerText = content;  
+       document.getElementById("myModal").style.display = "block";  
+     }  
+ 
+     function closeModal() {  
+       document.getElementById("myModal").style.display = "none";  
+     }  
+ 
+     window.onclick = function(event) {  
+       const modal = document.getElementById("myModal");  
+       if (event.target == modal) {  
+         modal.style.display = "none";  
+       }  
+     }  
+   </script>  
+ </body>  
+ </html>
