@@ -1,213 +1,137 @@
-<!DOCTYPE html>
+<!DOCTYPE html>  
 <html lang="en">  
-
 <head>  
-    <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>神秘站点 QWQ</title>  
+  <script type="text/javascript">  
+    (function(c,l,a,r,i,t,y){  
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};  
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;  
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);  
+    })(window, document, "clarity", "script", "nzxoamf653");  
+  </script>  
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>DF4D-4401的神秘站点QWQ</title>  
+  <style>  
+    body {  
+      font-family: 'Arial', sans-serif;  
+      background: linear-gradient(135deg, #e0f7fa, #ffebee);  
+      margin: 0;  
+      padding: 20px;  
+    }  
 
-    <!-- 引入 marked.js -->  
-<script src="df4d-4401.github.io/marked.min.js/marked.min.js"></script>  
+    .container {  
+      display: flex;  
+      flex-wrap: wrap;  
+      gap: 20px;  
+      justify-content: space-between;  
+      background-color: rgba(255, 255, 255, 0.8);  
+      padding: 20px;  
+      border-radius: 15px;  
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);  
+    }  
 
-    <style>  
-        /* 重置样式 */  
-        * {  
-            box-sizing: border-box;  
-            margin: 0;  
-            padding: 0;  
-        }  
+    .box {  
+      flex: 1 1 calc(25% - 20px);  
+      background-color: #ffffff;  
+      border-radius: 10px;  
+      padding: 20px;  
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  
+      text-align: center;  
+      text-decoration: none;  
+      color: #333;  
+      transition: transform 0.4s ease, box-shadow 0.4s ease;  
+      cursor: pointer;  
+    }  
 
-        body {  
-            font-family: 'Arial', sans-serif;  
-            background: linear-gradient(135deg, #e0f7fa, #ffebee);  
-            padding: 20px;  
-            color: #333;  
-            line-height: 1.6;  
-        }  
+    .box:hover {  
+      transform: translateY(-8px);  
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);  
+    }  
 
-        h1 {  
-            text-align: center;  
-            margin-bottom: 1rem;  
-            color: #005b5c;  
-        }  
+    .modal {  
+      display: none;  
+      position: fixed;  
+      z-index: 1000;  
+      left: 0;  
+      top: 0;  
+      width: 100%;  
+      height: 100%;  
+      overflow: auto;  
+      background-color: rgba(0, 0, 0, 0.7);  
+      padding-top: 60px;  
+    }  
 
-        .container {  
-            display: flex;  
-            flex-wrap: wrap;  
-            gap: 20px;  
-            justify-content: center;  
-            padding: 20px;  
-            border-radius: 15px;  
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);  
-            background-color: rgba(255, 255, 255, 0.9);  
-        }  
+    .modal-content {  
+      background-color: #fefefe;  
+      margin: 5% auto;  
+      padding: 20px;  
+      border: 1px solid #888;  
+      width: 80%;  
+      border-radius: 10px;  
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);  
+      transition: transform 0.3s ease;  
+    }  
 
-        .box {  
-            flex: 1 1 calc(25% - 40px);  
-            background-color: #ffffff;  
-            border-radius: 10px;  
-            padding: 20px;  
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);  
-            cursor: pointer;  
-            transition: transform 0.3s ease, box-shadow 0.3s ease;  
-            text-align: center;  
-            position: relative;  
-            overflow: hidden;  
-        }  
+    .close {  
+      color: #aaa;  
+      float: right;  
+      font-size: 28px;  
+      font-weight: bold;  
+    }  
 
-        .box:hover {  
-            transform: translateY(-5px);  
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);  
-        }  
-
-        .modal {  
-            display: none;  
-            position: fixed;  
-            z-index: 1000;  
-            left: 0;  
-            top: 0;  
-            width: 100%;  
-            height: 100%;  
-            overflow: auto;  
-            background-color: rgba(0, 0, 0, 0.7);  
-            padding-top: 60px;  
-        }  
-
-        .modal-content {  
-            background-color: #fefefe;  
-            margin: 5% auto;  
-            padding: 20px;  
-            border: 1px solid #888;  
-            width: 80%;  
-            max-width: 600px;  
-            border-radius: 10px;  
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);  
-            animation: fadeIn 0.5s;  
-            position: relative;  
-        }  
-
-        .close {  
-            color: #aaa;  
-            float: right;  
-            font-size: 28px;  
-            font-weight: bold;  
-        }  
-
-        .close:hover,  
-        .close:focus {  
-            color: black;  
-            text-decoration: none;  
-            cursor: pointer;  
-        }  
-
-        @keyframes fadeIn {  
-            from {  
-                opacity: 0;  
-            }  
-
-            to {  
-                opacity: 1;  
-            }  
-        }  
-
-        a {  
-            color: #007bff;  
-            text-decoration: none;  
-            transition: color 0.3s;  
-        }  
-
-        a:hover {  
-            color: #0056b3;  
-            text-decoration: underline;  
-        }  
-
-        @media (max-width: 768px) {  
-            .box {  
-                flex: 1 1 100%;  
-            }  
-        }  
-    </style>  
+    .close:hover,  
+    .close:focus {  
+      color: black;  
+      text-decoration: none;  
+      cursor: pointer;  
+    }  
+  </style>  
 </head>  
-
 <body>  
-    <div id="testMarkdown"></div>  
-<script>  
-    const markdown = '# 标题\n## 子标题\n- 列表项 1\n- 列表项 2';  
-    const html = marked.parse(markdown);  
-    document.getElementById('testMarkdown').innerHTML = html;  
-</script>  
-    <h1>神秘站点 QWQ</h1>  
-    <div class="container" id="container"></div>  
+  <div class="container" id="container"></div>  
 
-    <div id="myModal" class="modal">  
-        <div class="modal-content">  
-            <span class="close" onclick="closeModal()">&times;</span>  
-            <div id="modalText"></div>  
-        </div>  
+  <div id="myModal" class="modal">  
+    <div class="modal-content">  
+      <span class="close" onclick="closeModal()">&times;</span>  
+      <div id="modalText"></div>  <!-- 用于显示内容和超链接 -->  
     </div>  
+  </div>  
 
-    <script>  
-        // 确保在DOM加载完成后执行  
-        document.addEventListener('DOMContentLoaded', function() {  
-            // 测试 marked 是否可用  
-            if (typeof marked !== 'function') {  
-                alert('错误：marked.js 未正确加载!');  
-                return;  
-            }  
-
-            // 加载 JSON 数据  
-            function loadData() {  
-                fetch('data.json')  
-                    .then(response => response.json())  
-                    .then(data => {  
-                        const container = document.getElementById('container');  
-                        data.forEach(item => {  
-                            const box = document.createElement('div');  
-                            box.className = 'box';  
-                            box.onclick = () => openModal(item.content, item.link); // 传递内容和链接  
-                            box.innerHTML = `<h3>${item.title}</h3><p>点击以展开</p>`;  
-                            container.appendChild(box);  
-                        });  
-                    })  
-                    .catch(error => {  
-                        console.error('Error loading JSON:', error);  
-                        alert('加载数据失败，请检查控制台。');  
-                    });  
-            }  
-
-            // 打开模态窗口并显示内容  
-            function openModal(content, link) {  
-                try {  
-                    // 使用 marked.parse 代替直接调用 marked  
-                    const htmlContent = marked.parse(content);  
-                    document.getElementById("modalText").innerHTML = `  
-                        ${htmlContent}<br>  
-                        <a href="${link}" target="_blank" rel="noopener noreferrer">点击这里访问链接</a>  
-                    `;  
-                    document.getElementById("myModal").style.display = "flex"; // 使用 flex 显示模态窗口  
-                } catch (error) {  
-                    console.error('Error processing Markdown:', error);  
-                    alert('处理Markdown内容失败，请检查控制台。');  
-                }  
-            }  
-
-            // 关闭模态窗口  
-            function closeModal() {  
-                document.getElementById("myModal").style.display = "none";  
-            }  
-
-            // 点击模态窗口外部区域关闭  
-            window.onclick = function(event) {  
-                const modal = document.getElementById("myModal");  
-                if (event.target === modal) {  
-                    closeModal();  
-                }  
-            };  
-
-            // 初始加载数据  
-            loadData();  
+  <script>  
+    // 加载 JSON 数据  
+    fetch('data.json')  
+      .then(response => response.json())  
+      .then(data => {  
+        const container = document.getElementById('container');  
+        data.forEach(item => {  
+          const box = document.createElement('div');  
+          box.className = 'box';  
+          box.onclick = () => openModal(item.content, item.link);  // 传递内容和链接  
+          box.innerHTML = `<h3>${item.title}</h3><p>Click to expand</p>`;  
+          container.appendChild(box);  
         });  
-    </script>  
-</body>  
+      })  
+      .catch(error => console.error('Error loading JSON:', error));  
 
+    function openModal(content, link) {  
+      // 在弹出窗口中插入内容和超链接  
+      document.getElementById("modalText").innerHTML = `  
+        ${content}<br>  
+        <a href="${link}" target="_blank">点击这里访问链接</a>  
+      `;  
+      document.getElementById("myModal").style.display = "block";  
+    }  
+
+    function closeModal() {  
+      document.getElementById("myModal").style.display = "none";  
+    }  
+
+    window.onclick = function(event) {  
+      const modal = document.getElementById("myModal");  
+      if (event.target == modal) {  
+        modal.style.display = "none";  
+      }  
+    }  
+  </script>  
+</body>  
 </html>  
