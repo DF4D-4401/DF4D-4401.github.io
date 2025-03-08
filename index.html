@@ -130,6 +130,12 @@
 </head>  
 
 <body>  
+    <div id="testMarkdown"></div>  
+<script>  
+    const markdown = '# 标题\n## 子标题\n- 列表项 1\n- 列表项 2';  
+    const html = marked.parse(markdown);  
+    document.getElementById('testMarkdown').innerHTML = html;  
+</script>  
     <h1>神秘站点 QWQ</h1>  
     <div class="container" id="container"></div>  
 
