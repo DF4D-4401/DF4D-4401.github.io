@@ -100,7 +100,6 @@
             cursor: pointer;  
         }  
 
-        /* 增加模态窗口的动画效果 */  
         @keyframes fadeIn {  
             from {  
                 opacity: 0;  
@@ -122,7 +121,6 @@
             text-decoration: underline;  
         }  
 
-        /* 响应式调整 */  
         @media (max-width: 768px) {  
             .box {  
                 flex: 1 1 100%;  
@@ -138,29 +136,34 @@
     <div id="myModal" class="modal">  
         <div class="modal-content">  
             <span class="close" onclick="closeModal()">&times;</span>  
-            <div id="modalText"></div> <!-- 用于显示内容和超链接 -->  
+            <div id="modalText"></div>  
         </div>  
     </div>  
 
     <script>  
         // 加载 JSON 数据  
-        fetch('data.json')  
-            .then(response => response.json())  
-            .then(data => {  
-                const container = document.getElementById('container');  
-                data.forEach(item => {  
-                    const box = document.createElement('div');  
-                    box.className = 'box';  
-                    box.onclick = () => openModal(item.content, item.link); // 传递内容和链接  
-                    box.innerHTML = `<h3>${item.title}</h3><p>点击以展开</p>`;  
-                    container.appendChild(box);  
+        function loadData() {  
+            fetch('data.json')  
+                .then(response => response.json())  
+                .then(data => {  
+                    const container = document.getElementById('container');  
+                    data.forEach(item => {  
+                        const box = document.createElement('div');  
+                        box.className = 'box';  
+                        box.onclick = () => openModal(item.content, item.link); // 传递内容和链接  
+                        box.innerHTML = `<h3>${item.title}</h3><p>点击以展开</p>`;  
+                        container.appendChild(box);  
+                    });  
+                })  
+                .catch(error => {  
+                    console.error('Error loading JSON:', error);  
+                    alert('加载数据失败，请检查控制台。');  
                 });  
-            })  
-            .catch(error => console.error('Error loading JSON:', error));  
+        }  
 
         function openModal(content, link) {  
             // 使用 marked 解析 Markdown 内容并在弹出窗口中插入  
-            const htmlContent = marked(content); // 转换 Markdown 为 HTML  
+            const htmlContent = marked(content);  
             document.getElementById("modalText").innerHTML = `  
                 ${htmlContent}<br>  
                 <a href="${link}" target="_blank">点击这里访问链接</a>  
@@ -175,21 +178,12 @@
         window.onclick = function (event) {  
             const modal = document.getElementById("myModal");  
             if (event.target == modal) {  
-                modal.style.display = "none";  
+                closeModal();  
             }  
         }  
 
-        // 确保在加载此页面时，为确保 Markdown 渲染正确添加一个测试内容  
-        document.addEventListener('DOMContentLoaded', () => {  
-            const testMarkdown = `  
-                # 测试标题  
-                这是一些 **粗体文本** 和 *斜体文本*。  
-                - 项目一  
-                - 项目二  
-                - [链接文字](https://example.com)  
-            `;  
-            console.log(marked(testMarkdown)); // 调试 Markdown 输出  
-        });  
+        // 页面加载后调用加载数据的函数  
+        document.addEventListener('DOMContentLoaded', loadData);  
     </script>  
 </body>  
 
