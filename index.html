@@ -6,13 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
     <title>神秘站点 QWQ</title>  
 
-   <script src="df4d-4401.github.io/marked.min.js"></script>  
+    <!-- 引入 marked.js -->  
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>  
+
     <style>  
-        /* CSS 样式 */  
+        /* 重置样式 */  
+        * {  
+            box-sizing: border-box;  
+            margin: 0;  
+            padding: 0;  
+        }  
+
         body {  
-            font-family: Arial, sans-serif;  
+            font-family: 'Arial', sans-serif;  
+            background: linear-gradient(135deg, #e0f7fa, #ffebee);  
             padding: 20px;  
-            background: #f7f7f7;  
+            color: #333;  
+            line-height: 1.6;  
+        }  
+
+        h1 {  
+            text-align: center;  
+            margin-bottom: 1rem;  
+            color: #005b5c;  
         }  
 
         .container {  
@@ -20,46 +36,96 @@
             flex-wrap: wrap;  
             gap: 20px;  
             justify-content: center;  
+            padding: 20px;  
+            border-radius: 15px;  
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);  
+            background-color: rgba(255, 255, 255, 0.9);  
         }  
 
         .box {  
+            flex: 1 1 calc(25% - 40px);  
+            background-color: #ffffff;  
+            border-radius: 10px;  
             padding: 20px;  
-            border: 1px solid #ccc;  
-            border-radius: 5px;  
-            background-color: #fff;  
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);  
             cursor: pointer;  
-            width: 200px;  
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  
+            transition: transform 0.3s ease, box-shadow 0.3s ease;  
+            text-align: center;  
+            position: relative;  
+            overflow: hidden;  
+        }  
+
+        .box:hover {  
+            transform: translateY(-5px);  
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);  
         }  
 
         .modal {  
             display: none;  
             position: fixed;  
-            top: 0;  
+            z-index: 1000;  
             left: 0;  
+            top: 0;  
             width: 100%;  
             height: 100%;  
+            overflow: auto;  
             background-color: rgba(0, 0, 0, 0.7);  
-            justify-content: center;  
-            align-items: center;  
+            padding-top: 60px;  
         }  
 
         .modal-content {  
-            background: #fff;  
+            background-color: #fefefe;  
+            margin: 5% auto;  
             padding: 20px;  
-            border-radius: 10px;  
+            border: 1px solid #888;  
             width: 80%;  
             max-width: 600px;  
+            border-radius: 10px;  
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);  
+            animation: fadeIn 0.5s;  
+            position: relative;  
         }  
 
         .close {  
+            color: #aaa;  
+            float: right;  
+            font-size: 28px;  
+            font-weight: bold;  
+        }  
+
+        .close:hover,  
+        .close:focus {  
+            color: black;  
+            text-decoration: none;  
             cursor: pointer;  
         }  
 
-        a {  
-            color: blue;  
+        @keyframes fadeIn {  
+            from {  
+                opacity: 0;  
+            }  
+
+            to {  
+                opacity: 1;  
+            }  
         }  
 
+        a {  
+            color: #007bff;  
+            text-decoration: none;  
+            transition: color 0.3s;  
+        }  
+
+        a:hover {  
+            color: #0056b3;  
+            text-decoration: underline;  
+        }  
+
+        @media (max-width: 768px) {  
+            .box {  
+                flex: 1 1 100%;  
+            }  
+        }  
     </style>  
 </head>  
 
@@ -75,6 +141,7 @@
     </div>  
 
     <script>  
+        // 加载 JSON 数据  
         function loadData() {  
             fetch('data.json')  
                 .then(response => response.json())  
@@ -83,7 +150,7 @@
                     data.forEach(item => {  
                         const box = document.createElement('div');  
                         box.className = 'box';  
-                        box.onclick = () => openModal(item.content, item.link);  
+                        box.onclick = () => openModal(item.content, item.link); // 传递内容和链接  
                         box.innerHTML = `<h3>${item.title}</h3><p>点击以展开</p>`;  
                         container.appendChild(box);  
                     });  
@@ -96,12 +163,13 @@
 
         function openModal(content, link) {  
             try {  
-                console.log(marked); // 确保这里能够正确输出函数  
+                // 使用 marked 解析 Markdown 内容并在弹出窗口中插入  
                 const htmlContent = marked(content);  
                 document.getElementById("modalText").innerHTML = `  
-                    ${htmlContent}<br><a href="${link}" target="_blank">点击这里访问链接</a>  
+                    ${htmlContent}<br>  
+                    <a href="${link}" target="_blank">点击这里访问链接</a>  
                 `;  
-                document.getElementById("myModal").style.display = "flex";  
+                document.getElementById("myModal").style.display = "block";  
             } catch (error) {  
                 console.error('Error processing Markdown:', error);  
                 alert('处理Markdown内容失败，请检查控制台。');  
@@ -112,13 +180,14 @@
             document.getElementById("myModal").style.display = "none";  
         }  
 
-        window.onclick = function(event) {  
+        window.onclick = function (event) {  
             const modal = document.getElementById("myModal");  
             if (event.target === modal) {  
                 closeModal();  
             }  
         }  
 
+        // 页面加载后调用加载数据的函数  
         document.addEventListener('DOMContentLoaded', loadData);  
     </script>  
 </body>  
